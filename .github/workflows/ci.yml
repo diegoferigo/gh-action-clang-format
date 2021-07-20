@@ -9,8 +9,20 @@ jobs:
 
   clang-format:
 
-    name: Test the action
+    name: "[${{ matrix.clang_format_version }}] Test example"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        clang_format_version:
+          - "6.0"
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
 
     steps:
 
@@ -36,7 +48,7 @@ jobs:
         uses: ./
         id: test_1_exe
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: Google
           fallback: none
           pattern: "*.cpp"
@@ -45,7 +57,7 @@ jobs:
         uses: ./
         id: test_1_lib
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: Mozilla
           fallback: none
           pattern: |
@@ -60,7 +72,7 @@ jobs:
         uses: ./
         id: test_2_exe
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: GNU
           fallback: none
           pattern: "*.cpp"
@@ -73,7 +85,7 @@ jobs:
         uses: ./
         id: test_2_lib
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: GNU
           fallback: none
           pattern: |
@@ -95,7 +107,7 @@ jobs:
         uses: ./
         id: test_3_exe
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: file
           fallback: Google
           pattern: "*.cpp"
@@ -104,7 +116,7 @@ jobs:
         uses: ./
         id: test_3_lib
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: file
           fallback: Mozilla
           pattern: |
@@ -119,7 +131,7 @@ jobs:
         uses: ./
         id: test_4_exe
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: file
           fallback: GNU
           pattern: "*.cpp"
@@ -132,7 +144,7 @@ jobs:
         uses: ./
         id: test_4_lib
         with:
-          version: 13
+          version: ${{ matrix.clang_format_version }}
           style: file
           fallback: GNU
           pattern: |
