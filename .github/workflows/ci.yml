@@ -1,0 +1,147 @@
+name: CI
+
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  clang-format:
+
+    name: Test the action
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: "🔍️ Inspect Environment"
+        run: |
+          env | grep ^GITHUB
+          echo ""
+          cat ${GITHUB_EVENT_PATH}
+          echo ""
+          env
+
+      - name: "🔀 Checkout repository"
+        uses: actions/checkout@v2
+
+      - name: "⬇️️ Install dependencies"
+        run: sudo apt-get install -y --no-install-recommends colordiff
+
+      # ==============================
+      # 1: format with the right style
+      # ==============================
+
+      - name: "[1|exe] Format"
+        uses: ./
+        id: test_1_exe
+        with:
+          version: 13
+          style: Google
+          fallback: none
+          pattern: "*.cpp"
+
+      - name: "[1|lib] Format"
+        uses: ./
+        id: test_1_lib
+        with:
+          version: 13
+          style: Mozilla
+          fallback: none
+          pattern: |
+            *.hh
+            *.cc
+
+      # ==============================================
+      # 2: format with the wrong style and no fallback
+      # ==============================================
+
+      - name: "[2|exe] Format C++"
+        uses: ./
+        id: test_2_exe
+        with:
+          version: 13
+          style: GNU
+          fallback: none
+          pattern: "*.cpp"
+          fail_on_error: 0
+
+      - name: "[2|exe|out] Style diff"
+        run: printf "${{ steps.test_2_exe.outputs.diff }}" | colordiff
+
+      - name: "[2|lib] Format C++"
+        uses: ./
+        id: test_2_lib
+        with:
+          version: 13
+          style: GNU
+          fallback: none
+          pattern: |
+            *.hh
+            *.cc
+          fail_on_error: 0
+
+      - name: "[2|lib|out] Style diff"
+        run: printf "${{ steps.test_2_lib.outputs.diff }}" | colordiff
+
+      - name: "[2|repo] Restore the original repo content"
+        run: git checkout -f --
+
+      # =======================================================
+      # 3: format with not existing file and the right fallback
+      # =======================================================
+
+      - name: "[3|exe] Format C++"
+        uses: ./
+        id: test_3_exe
+        with:
+          version: 13
+          style: file
+          fallback: Google
+          pattern: "*.cpp"
+
+      - name: "[3|lib] Format C++"
+        uses: ./
+        id: test_3_lib
+        with:
+          version: 13
+          style: file
+          fallback: Mozilla
+          pattern: |
+            *.hh
+            *.cc
+
+      # =======================================================
+      # 4: format with not existing file and the wrong fallback
+      # =======================================================
+
+      - name: "[4|exe] Format C++"
+        uses: ./
+        id: test_4_exe
+        with:
+          version: 13
+          style: file
+          fallback: GNU
+          pattern: "*.cpp"
+          fail_on_error: 0
+
+      - name: "[4|exe|out] Get the action output"
+        run: printf "${{ steps.test_4_exe.outputs.diff }}" | colordiff
+
+      - name: "[4|lib] Format C++"
+        uses: ./
+        id: test_4_lib
+        with:
+          version: 13
+          style: file
+          fallback: GNU
+          pattern: |
+            *.hh
+            *.cc
+          fail_on_error: 0
+
+      - name: "[4|lib|out] Get the action output"
+        run: printf "${{ steps.test_4_lib.outputs.diff }}" | colordiff
+
+      - name: "[4|repo] Restore the original repo content"
+        run: git checkout -f --
