@@ -1,12 +1,43 @@
-name: 'Container Action Template'
-description: 'Get started with Container actions'
-author: 'GitHub'
+name: clang-format
+description: "Format C++ files with clang-format."
+author: Diego Ferigo
+# branding:
+#   icon:
+#   color:
+
 inputs: 
-  myInput:
-    description: 'Input to use'
-    default: 'world'
+  version:
+    description: the clang-format version to run
+    default: 13
+    required: false
+  directory: 
+    description: the directory where to find the files to format
+    default: /github/workspace
+    required: false
+  pattern:
+    description: string defining the sources matching pattern, delimited by '\n'
+    default: |
+      *.h
+      *.hh
+      *.cpp
+      *.cc
+    required: false
+  style:
+    description: the clang-format style to apply
+    required: true
+  fallback:
+    description: the fallback clang-format style to apply
+    default: none
+    required: false
+  fail_on_error:
+    description: make the step fail in case of unformatted sources
+    default: 1
+    required: false
+
+outputs:
+  diff:
+    description: The diff after the style formatting
+
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.myInput }}
+  using: docker
+  image: Dockerfile
