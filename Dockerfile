@@ -12,6 +12,8 @@ RUN apt-get update &&\
 
 RUN wget -nv -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - &&\
     apt-add-repository -y "deb http://apt.llvm.org/`lsb_release -cs`/ llvm-toolchain-`lsb_release -cs` main" &&\
+    apt-add-repository -y "deb http://apt.llvm.org/`lsb_release -cs`/ llvm-toolchain-`lsb_release -cs`-12 main" &&\
+    apt-add-repository -y "deb http://apt.llvm.org/`lsb_release -cs`/ llvm-toolchain-`lsb_release -cs`-13 main" &&\
     apt-get install -y --no-install-recommends \
         clang-format-6.0 \
         clang-format-7 \
